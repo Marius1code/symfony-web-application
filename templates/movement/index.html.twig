@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historique des mouvements{% endblock %}
+
+{% block body %}
+<h1>Historique des mouvements</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Type</th>
+            <th>Article</th>
+            <th>Quantité</th>
+            <th>Date</th>
+            <th>Notes</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for movement in movements %}
+            <tr>
+                <td>{{ movement.type|capitalize }}</td>
+                <td>{{ movement.article.name }}</td>
+                <td>{{ movement.quantity }}</td>
+                <td>{{ movement.date|date('d/m/Y H:i') }}</td>
+                <td>{{ movement.notes }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5" class="text-center">Aucun mouvement trouvé.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
