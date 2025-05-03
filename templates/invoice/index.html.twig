@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Factures{% endblock %}
+
+{% block body %}
+<h1>Factures</h1>
+
+<a href="{{ path('invoice_new') }}" class="btn btn-primary mb-3"><i class="fas fa-plus"></i> Nouvelle facture</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Client</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for invoice in invoices %}
+            <tr>
+                <td>{{ invoice.client.name }}</td>
+                <td>{{ invoice.date|date('d/m/Y H:i') }}</td>
+                <td>{{ invoice.getTotal()|number_format(2, ',', ' ') }} €</td>
+                <td>
+                    <a href="{{ path('invoice_edit', {'id': invoice.id}) }}" class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Modifier</a>
+                    <form method="post" action="{{ path('invoice_delete', {'id': invoice.id}) }}" style="display:inline-block;" onsubmit="return confirm('Voulez-vous vraiment supprimer cette facture ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ invoice.id) }}">
+                        <button class="btn btn-sm btn-danger" type="submit"><i class="fas fa-trash"></i> Supprimer</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4" class="text-center">Aucune facture trouvée.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
