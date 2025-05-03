@@ -1,0 +1,167 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de bord{% endblock %}
+
+{% block body %}
+<h1>Tableau de bord</h1>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-header">Chiffre d'affaires</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ totalRevenue|number_format(2, ',', ' ') }} €</h5>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info mb-3">
+            <div class="card-header">Marge totale estimée</div>
+            <div class="card-body">
+                <h5 class="card-title">{{ totalMargin|number_format(2, ',', ' ') }} €</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2>Produits les plus vendus</h2>
+<table class="table table-striped mb-4">
+    <thead>
+        <tr>
+            <th>Produit</th>
+            <th>Quantité vendue</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in bestSellers %}
+            <tr>
+                <td>{{ item[0].name }}</td>
+                <td>{{ item.totalSold }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2" class="text-center">Aucun produit vendu.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2>Alertes</h2>
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h3>Stocks critiques</h3>
+        <ul class="list-group">
+            {% for article in criticalStocks %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ article.name }}
+                    <span class="badge bg-danger rounded-pill">{{ article.stockQuantity }}</span>
+                </li>
+            {% else %}
+                <li class="list-group-item">Aucun stock critique.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <h3>Clients en retard de paiement</h3>
+        <ul class="list-group">
+            {% for client in lateClients %}
+                <li class="list-group-item">{{ client.name }}</li>
+            {% else %}
+                <li class="list-group-item">Aucun client en retard.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<h2>Graphiques</h2>
+<div class="row">
+    <div class="col-md-6">
+        <canvas id="salesChart"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="stockRotationChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Sample data for sales evolution chart
+    const salesData = {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+            label: 'Ventes',
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgb(54, 162, 235)',
+            data: [1200, 1900, 3000, 5000, 2300, 3400],
+            fill: true,
+            tension: 0.4
+        }]
+    };
+
+    const salesConfig = {
+        type: 'line',
+        data: salesData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Évolution des ventes'
+                }
+            }
+        },
+    };
+
+    const salesChart = new Chart(
+        document.getElementById('salesChart'),
+        salesConfig
+    );
+
+    // Sample data for stock rotation chart
+    const stockRotationData = {
+        labels: ['Produit A', 'Produit B', 'Produit C', 'Produit D'],
+        datasets: [{
+            label: 'Rotation des stocks',
+            data: [12, 19, 3, 5],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(255, 159, 64, 0.5)',
+                'rgba(255, 205, 86, 0.5)',
+                'rgba(75, 192, 192, 0.5)'
+            ],
+            borderColor: [
+                'rgb(255, 99, 132)',
+                'rgb(255, 159, 64)',
+                'rgb(255, 205, 86)',
+                'rgb(75, 192, 192)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const stockRotationConfig = {
+        type: 'bar',
+        data: stockRotationData,
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Rotation des stocks'
+                }
+            }
+        },
+    };
+
+    const stockRotationChart = new Chart(
+        document.getElementById('stockRotationChart'),
+        stockRotationConfig
+    );
+</script>
+{% endblock %}
